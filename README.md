@@ -1,198 +1,77 @@
-# Physics-Informed Neural Networks for Navier–Stokes Equation
+# Solving the 2D Navier–Stokes Equations with a PINN
 
-Implementation of a Physics-Informed Neural Network (PINN) to solve the 2D incompressible Navier–Stokes equations for the lid-driven cavity flow problem.
+This project applies a Physics-Informed Neural Network (PINN) to the lid-driven cavity problem for an incompressible fluid. The notebooks explore three Reynolds numbers: 100, 400 and 1000.
 
----
+The work was part of my Applied Mathematics studies at IIT Roorkee.
 
-## Repository Structure
+## Problem
 
-```bash
-├── 20312032_report (1).pdf      # Full thesis report
-├── README.md                    # Project documentation
-├── re_100.ipynb                 # PINN training and analysis for Re = 100
-├── re_400.ipynb                 # PINN training and analysis for Re = 400
-├── re_1000.ipynb                # PINN training and analysis for Re = 1000
-└── sandeep_kumar_20312032 (5).pdf
-```
+The lid-driven cavity is a standard fluid-mechanics test case: the top wall moves at a fixed horizontal velocity while the other three walls remain stationary. The resulting flow is governed by the incompressible continuity and momentum equations.
 
----
+Using velocity components (u,v), pressure (p), density (ho) and kinematic viscosity (
+u):
 
-# Overview
+[
+\frac{\partial u}{\partial x}+\frac{\partial v}{\partial y}=0
+]
 
-This project uses **Physics-Informed Neural Networks (PINNs)** to approximate solutions of the incompressible Navier–Stokes equations without traditional mesh-based CFD solvers.
+[
+u\frac{\partial u}{\partial x}+v\frac{\partial u}{\partial y}
+=-\frac{1}{\rho}\frac{\partial p}{\partial x}
++\nu\left(\frac{\partial^2u}{\partial x^2}+\frac{\partial^2u}{\partial y^2}\right)
+]
 
-The model is tested on the classical **lid-driven cavity flow** benchmark problem for different Reynolds numbers.
+[
+u\frac{\partial v}{\partial x}+v\frac{\partial v}{\partial y}
+=-\frac{1}{\rho}\frac{\partial p}{\partial y}
++\nu\left(\frac{\partial^2v}{\partial x^2}+\frac{\partial^2v}{\partial y^2}\right)
+]
 
-The PINN framework embeds the governing PDEs directly into the neural network loss function using automatic differentiation.
+The PINN takes spatial coordinates as input and predicts velocity and pressure. Automatic differentiation is used to form the PDE residuals, which are combined with boundary-condition terms in the training loss.
 
----
+## Experiments
 
-# Governing Equations
+| Notebook | Reynolds number |
+|---|---:|
+| `re_100.ipynb` | 100 |
+| `re_400.ipynb` | 400 |
+| `re_1000.ipynb` | 1000 |
 
-## Continuity Equation
+The notebooks use TensorFlow and include training and flow-field analysis. The original experiment settings recorded in the project are:
 
-\[
-\frac{\partial u}{\partial x} + \frac{\partial v}{\partial y} = 0
-\]
+- Optimizer: Adam
+- Activation: tanh
+- Collocation points: 5,000
+- Boundary points: 500
+- Training epochs: 50,000
 
-## Momentum Equations
+These are the recorded notebook settings; they are not a guarantee that every run converges to the same result.
 
-### X-Momentum
+## Repository contents
 
-\[
-u \frac{\partial u}{\partial x}
-+
-v \frac{\partial u}{\partial y}
-=
--\frac{\partial p}{\partial x}
-+
-\nu
-\left(
-\frac{\partial^2 u}{\partial x^2}
-+
-\frac{\partial^2 u}{\partial y^2}
-\right)
-\]
+- `re_100.ipynb`, `re_400.ipynb`, `re_1000.ipynb` — experiments at different Reynolds numbers.
+- `20312032_report (1).pdf` — project report.
+- `sandeep_kumar_20312032 (5).pdf` — accompanying report document.
 
-### Y-Momentum
+## Run the notebooks
 
-\[
-u \frac{\partial v}{\partial x}
-+
-v \frac{\partial v}{\partial y}
-=
--\frac{\partial p}{\partial y}
-+
-\nu
-\left(
-\frac{\partial^2 v}{\partial x^2}
-+
-\frac{\partial^2 v}{\partial y^2}
-\right)
-\]
-
----
-
-# Problem Description
-
-The lid-driven cavity problem consists of:
-
-- A square cavity filled with incompressible fluid
-- Top wall moving horizontally with constant velocity
-- Remaining walls fixed
-
-The flow generates:
-
-- Primary vortices
-- Secondary vortices
-- Complex streamline patterns
-
----
-
-# PINN Architecture
-
-The neural network:
-
-- Takes spatial coordinates \((x,y)\) as input
-- Predicts:
-  - Horizontal velocity \(u\)
-  - Vertical velocity \(v\)
-  - Pressure \(p\)
-
-The loss function combines:
-
-- PDE residual loss
-- Boundary condition loss
-
-Automatic differentiation is used to compute required derivatives.
-
----
-
-# Training Details
-
-| Parameter | Value |
-|---|---|
-| Optimizer | Adam |
-| Activation | tanh |
-| Collocation Points | 5000 |
-| Boundary Points | 500 |
-| Epochs | 50000 |
-| Framework | TensorFlow |
-
----
-
-# Reynolds Number Experiments
-
-## Re = 100
-- Smooth laminar flow
-- Accurate vortex prediction
-- Strong agreement with benchmark data
-
-## Re = 400
-- Captures secondary vortices
-- Increased error near cavity walls
-
-## Re = 1000
-- Complex turbulent structures
-- Higher approximation difficulty
-
----
-
-# Results
-
-The model successfully predicts:
-
-- Velocity contours
-- Streamlines
-- Centerline velocity profiles
-- Vortex locations
-
-Results are validated against benchmark solutions from:
-
-> Ghia et al. (1982)
-
----
-
-# Technologies Used
-
-- Python
-- TensorFlow
-- NumPy
-- Matplotlib
-- Automatic Differentiation
-
----
-
-# Running the Notebooks
-
-Open Jupyter Notebook:
+Use a Python environment with Jupyter, TensorFlow, NumPy and Matplotlib installed. TensorFlow installation depends on the operating system and available hardware, so choose a version compatible with your setup.
 
 ```bash
+python -m venv .venv
+# Windows: .venv\\Scripts\\activate
+# macOS/Linux: source .venv/bin/activate
+pip install numpy matplotlib jupyter tensorflow
 jupyter notebook
 ```
 
-Run any experiment notebook:
+Open one of the three experiment notebooks and execute the cells in order.
 
-- `re_100.ipynb`
-- `re_400.ipynb`
-- `re_1000.ipynb`
+## References
 
----
+- Raissi, M., Perdikaris, P. and Karniadakis, G. E. (2019), *Physics-informed neural networks: A deep learning framework for solving forward and inverse problems involving nonlinear partial differential equations*, Journal of Computational Physics.
+- Ghia, U., Ghia, K. N. and Shin, C. T. (1982), *High-Re solutions for incompressible flow using the Navier–Stokes equations and a multigrid method*, Journal of Computational Physics.
 
-# References
+## Author
 
-1. Raissi, M. et al.  
-   *Physics-Informed Neural Networks*  
-   Journal of Computational Physics (2019)
-
-2. Ghia, U. et al.  
-   *High-Re Solutions for Incompressible Flow Using Navier–Stokes Equations*  
-   Journal of Computational Physics (1982)
-
----
-
-# Author
-
-**Sandeep Kumar**  
-Integrated M.Sc. Applied Mathematics  
-Indian Institute of Technology Roorkee
+Sandeep Kumar · [GitHub](https://github.com/Sandeep-kumar-IITR)
